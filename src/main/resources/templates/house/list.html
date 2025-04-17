@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>房源列表</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+        .card-body {
+            padding: 1.5rem;
+            background: white;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+        .card:hover .card-title {
+            color: #0d6efd;
+        }
+        .card-text {
+            color: #6c757d;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        .text-primary {
+            color: #0d6efd !important;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .location-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .badge {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+        .badge.bg-success:hover {
+            background-color: #157347 !important;
+        }
+        h2 {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: #0d6efd;
+            border-radius: 3px;
+        }
+        .floating-button {
+            transition: all 0.3s ease;
+        }
+        .floating-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <!-- 全局浮动返回首页按钮 -->
+    <a href="/" class="btn btn-primary position-fixed floating-button" style="bottom: 30px; right: 30px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+        </svg>
+    </a>
+    <!-- 返回上一级按钮 -->
+    <a href="javascript:history.back()" class="btn btn-outline-primary position-fixed floating-button" style="bottom: 90px; right: 30px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+    </a>
+    <div class="container mt-5">
+
+        <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="house : ${houses}">
+                <a th:href="@{/house/detail/{id}(id=${house.id})}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm">
+                        <img th:if="${house.imageUrl}" th:src="${house.imageUrl}" class="card-img-top" alt="房源图片" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark mb-3" th:text="${house.title}"></h5>
+                            <p class="card-text text-muted mb-3" style="font-size: 0.95rem; line-height: 1.6;" th:text="${#strings.abbreviate(house.description, 100)}"></p>
+                            <p class="card-text location-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                                <span th:text="${house.location}"></span>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <h6 class="card-subtitle mb-0 text-primary">
+                                    <span th:text="${#numbers.formatDecimal(house.price, 0, 'COMMA', 2, 'POINT')}"></span> 元/月
+                                </h6>
+                                <span class="badge bg-success">可租</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(houses)}" class="text-center mt-5">
+            <p class="text-muted">暂无房源信息</p>
+        </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

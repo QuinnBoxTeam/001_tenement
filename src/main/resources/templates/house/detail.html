@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>房源详情</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <!-- 全局浮动返回首页按钮 -->
+    <a href="/" class="btn btn-primary position-fixed" style="bottom: 30px; right: 30px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+        </svg>
+    </a>
+    <!-- 返回上一级按钮 -->
+    <a href="javascript:history.back()" class="btn btn-outline-primary position-fixed" style="bottom: 90px; right: 30px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+    </a>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <img th:if="${house.imageUrl}" th:src="${house.imageUrl}" class="card-img-top" alt="房源图片">
+                    <div class="card-body">
+                        <h3 class="card-title" th:text="${house.title}"></h3>
+                        <p class="card-text" th:text="${house.description}"></p>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-primary" th:text="'¥' + ${house.price} + '/月'"></h4>
+                            <span class="text-muted" th:text="'发布时间：' + ${#temporals.format(house.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                        <p><i class="bi bi-geo-alt"></i> <span th:text="${house.location}"></span></p>
+                        <p><i class="bi bi-telephone"></i> 联系方式：<span th:text="${house.contactInfo}"></span></p>
+                        
+                        <div class="mt-4" th:if="${session.user != null && session.user.id != house.userId}">
+                            <button th:if="${house.status == 'available'}" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#rentModal">申请租赁</button>
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#messageModal">发送消息</button>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3" th:if="${house.status == 'rented'}">
+                            该房源已被租出
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">房东信息</h5>
+                        <p class="card-text" th:text="'房东：' + ${landlord.username}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 发送消息模态框 -->
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">发送消息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="messageForm">
+                        <input type="hidden" id="receiverId" th:value="${house.userId}">
+                        <input type="hidden" id="houseId" th:value="${house.id}">
+                        <div class="mb-3">
+                            <label for="content" class="form-label">消息内容</label>
+                            <textarea class="form-control" id="content" rows="3" required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="sendMessage()">发送</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 租赁申请模态框 -->
+    <div class="modal fade" id="rentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/rental/apply}" method="post">
+                    <input type="hidden" name="houseId" th:value="${house.id}">
+                    <div class="modal-header">
+                        <h5 class="modal-title">申请租赁</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="startTime" class="form-label required">预计入住时间</label>
+                            <input type="date" class="form-control" id="startTime" name="startTime" required>
+                            <div class="form-text text-muted">请选择今天或之后的日期</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rentalMonths" class="form-label required">租赁月数</label>
+                            <input type="number" class="form-control" id="rentalMonths" name="rentalMonths" min="1" max="36" required>
+                            <div class="form-text text-muted">请输入1-36个月的租期</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="endTime" class="form-label">预计退租时间</label>
+                            <input type="date" class="form-control" id="endTime" name="endTime" readonly>
+                            <div class="form-text text-muted">根据入住时间和租期自动计算</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remark" class="form-label">备注信息</label>
+                            <textarea class="form-control" id="remark" name="remark" rows="3" maxlength="200" placeholder="请输入其他需要说明的信息（选填）"></textarea>
+                            <div class="form-text text-muted">最多200字</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">提交申请</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 设置入住时间最小值为当前日期
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startTime').setAttribute('min', today);
+
+        // 监听入住时间和租赁月数的变化，自动计算退租时间
+        document.getElementById('startTime').addEventListener('change', function() {
+            if (this.value < today) {
+                alert('入住时间不能早于今天');
+                this.value = today;
+            }
+            calculateEndTime();
+        });
+        document.getElementById('rentalMonths').addEventListener('input', calculateEndTime);
+
+        function calculateEndTime() {
+            const startTime = document.getElementById('startTime').value;
+            const rentalMonths = document.getElementById('rentalMonths').value;
+            
+            if (startTime && rentalMonths && rentalMonths > 0) {
+                const startDate = new Date(startTime);
+                const endDate = new Date(startDate.setMonth(startDate.getMonth() + parseInt(rentalMonths)));
+                document.getElementById('endTime').value = endDate.toISOString().split('T')[0];
+            } else {
+                document.getElementById('endTime').value = '';
+            }
+        }
+        
+        function sendMessage() {
+            const receiverId = document.getElementById('receiverId').value;
+            const houseId = document.getElementById('houseId').value;
+            const content = document.getElementById('content').value.trim();
+            if (!content) return;
+
+            // 先检查是否存在对话记录
+            fetch(`/message/check-conversation?userId=${receiverId}&houseId=${houseId}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.exists) {
+                        // 如果存在对话记录，直接跳转到对话页面
+                        window.location.href = `/message/conversation/${receiverId}/${houseId}`;
+                    } else {
+                        // 如果不存在对话记录，发送消息后跳转
+                        fetch('/message/send', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `receiverId=${receiverId}&content=${encodeURIComponent(content)}&houseId=${houseId}`
+                        })
+                        .then(response => response.text())
+                        .then(result => {
+                            if (result === 'success') {
+                                window.location.href = `/message/conversation/${receiverId}/${houseId}`;
+                            } else {
+                                alert('发送失败：' + result);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('发送失败，请重试');
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('检查对话记录失败，请重试');
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑房源</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar :: navbar"></div>
+    <!-- 全局浮动返回首页按钮 -->
+    <a href="/" class="btn btn-primary position-fixed" style="bottom: 30px; right: 30px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+        </svg>
+    </a>
+    <!-- 返回上一级按钮 -->
+    <a href="javascript:history.back()" class="btn btn-outline-primary position-fixed" style="bottom: 90px; right: 30px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+    </a>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">编辑房源信息</h3>
+                        <form th:action="@{/house/edit}" method="post" enctype="multipart/form-data" th:object="${house}">
+                            <input type="hidden" th:field="*{id}">
+                            <input type="hidden" th:field="*{userId}">
+                            <input type="hidden" th:field="*{createTime}">
+                            <input type="hidden" th:field="*{imageUrl}">
+                            
+                            <div class="mb-3">
+                                <label for="title" class="form-label">标题</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">描述</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="price" class="form-label">价格（元/月）</label>
+                                <input type="number" class="form-control" id="price" th:field="*{price}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="location" class="form-label">位置</label>
+                                <input type="text" class="form-control" id="location" th:field="*{location}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="contactInfo" class="form-label">联系方式</label>
+                                <input type="text" class="form-control" id="contactInfo" th:field="*{contactInfo}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="status" class="form-label">状态</label>
+                                <select class="form-select" id="status" th:field="*{status}">
+                                    <option value="available">可租</option>
+                                    <option value="rented">已租</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">更新图片</label>
+                                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+                                <div class="form-text">如果不上传新图片，将保留原有图片</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">保存修改</button>
+                                <a th:href="@{/house/my}" class="btn btn-outline-secondary">返回</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

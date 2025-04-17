@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>错误页面</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+        .error-container {
+            text-align: center;
+            padding: 40px 15px;
+        }
+        .error-details {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-5">
+        <div class="error-container">
+            <h2 class="text-danger">出错了！</h2>
+            <div class="error-details">
+                <p><strong>错误类型：</strong> <span th:text="${errorType}">未知错误</span></p>
+                <p><strong>错误信息：</strong> <span th:text="${errorMessage}">未知错误信息</span></p>
+            </div>
+            <a href="/" class="btn btn-primary">返回首页</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

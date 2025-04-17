@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的租赁申请</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">我的租赁申请</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>申请时间</th>
+                        <th>房源信息</th>
+                        <th>预计入住时间</th>
+                        <th>预计退租时间</th>
+                        <th>申请状态</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="rentalApplication : ${rentalApplications}">
+                        <td th:text="${#temporals.format(rentalApplication.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td>
+                            <a th:href="@{/house/detail/{id}(id=${rentalApplication.houseId})}" class="text-decoration-none">查看房源</a>
+                        </td>
+                        <td th:text="${#temporals.format(rentalApplication.startTime, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#temporals.format(rentalApplication.endTime, 'yyyy-MM-dd')}"></td>
+                        <td>
+                            <span th:if="${rentalApplication.status == 'pending'}" class="badge bg-warning">待处理</span>
+                            <span th:if="${rentalApplication.status == 'approved'}" class="badge bg-success">已批准</span>
+                            <span th:if="${rentalApplication.status == 'rejected'}" class="badge bg-danger">已拒绝</span>
+                        </td>
+                        <td th:text="${rentalApplication.remark}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

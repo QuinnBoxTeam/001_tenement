@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>房源租赁申请</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">房源租赁申请列表</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>申请时间</th>
+                        <th>申请人</th>
+                        <th>预计入住时间</th>
+                        <th>预计退租时间</th>
+                        <th>申请状态</th>
+                        <th>备注</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="rentalApplication : ${rentalApplications}">
+                        <td th:text="${#temporals.format(rentalApplication.createTime, T(com.quinn.tenement.constant.Constants).DATETIME_FORMAT)}"></td>
+                        <td th:text="${rentalApplication.userId}"></td>
+                        <td th:text="${#temporals.format(rentalApplication.startTime, T(com.quinn.tenement.constant.Constants).DATE_FORMAT)}"></td>
+                        <td th:text="${#temporals.format(rentalApplication.endTime, T(com.quinn.tenement.constant.Constants).DATE_FORMAT)}"></td>
+                        <td>
+                            <span th:if="${rentalApplication.status == T(com.quinn.tenement.constant.Constants).APPLICATION_STATUS_PENDING}" class="badge bg-warning">待处理</span>
+                            <span th:if="${rentalApplication.status == T(com.quinn.tenement.constant.Constants).APPLICATION_STATUS_APPROVED}" class="badge bg-success">已批准</span>
+                            <span th:if="${rentalApplication.status == T(com.quinn.tenement.constant.Constants).APPLICATION_STATUS_REJECTED}" class="badge bg-danger">已拒绝</span>
+                        </td>
+                        <td th:text="${rentalApplication.remark}"></td>
+                        <td>
+                            <div th:if="${rentalApplication.status == T(com.quinn.tenement.constant.Constants).APPLICATION_STATUS_PENDING}">
+                                <form th:action="@{/rental/approve/{id}(id=${rentalApplication.id})}" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" th:value="${rentalApplication.id}" />
+                                    <button type="submit" class="btn btn-success btn-sm">同意</button>
+                                </form>
+                                <form th:action="@{/rental/reject/{id}(id=${rentalApplication.id})}" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" th:value="${rentalApplication.id}" />
+                                    <button type="submit" class="btn btn-danger btn-sm">拒绝</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateStatus(button) {
+            const id = button.getAttribute('data-id');
+            const status = button.getAttribute('data-status');
+
+            fetch('/rental/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}&status=${status}`
+            })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'success') {
+                    location.reload();
+                } else {
+                    alert('操作失败：' + result);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('操作失败，请重试');
+            });
+        }
+    </script>
+</body>
+</html>

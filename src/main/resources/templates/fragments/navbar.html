@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" th:fragment="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/" th:text="${T(com.quinn.tenement.constant.Constants).SYSTEM_NAME}"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/house/list">房源列表</a>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <a class="nav-link" th:href="@{/house/publish}">发布房源</a>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <a class="nav-link" href="/house/my">我的房源</a>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <a class="nav-link" th:href="@{/message/list}">我的消息</a>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <a class="nav-link" th:href="@{/rental/my-applications}">我的租赁申请</a>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <a class="nav-link" th:href="@{/rental/house-applications}">房源申请管理</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item" th:if="${session.user == null}">
+                    <a class="nav-link" href="/user/login">登录</a>
+                </li>
+                <li class="nav-item" th:if="${session.user == null}">
+                    <a class="nav-link" href="/user/register">注册</a>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <span class="nav-link">欢迎，<span th:text="${session.user.username}"></span></span>
+                </li>
+                <li class="nav-item" th:if="${session.user != null}">
+                    <a class="nav-link" href="/user/logout">退出</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

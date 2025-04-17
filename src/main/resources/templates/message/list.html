@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>消息列表</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 2rem;
+        }
+        .list-group-item {
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .list-group-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary {
+            border: 1px solid #0d6efd;
+        }
+        .btn-outline-primary:hover {
+            background-color: #0d6efd;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13,110,253,0.2);
+        }
+        .text-muted {
+            color: #6c757d !important;
+        }
+        h2 {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row mb-4">
+            <div class="col">
+                <h2>我的消息</h2>
+            </div>
+            <div class="col text-end">
+                <a th:href="@{/}" class="btn btn-outline-secondary">返回首页</a>
+            </div>
+        </div>
+
+        <div class="list-group">
+            <div th:each="message : ${messages}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">
+                        <span th:if="${message.senderId == session.user.id}">发送给：</span>
+                        <span th:if="${message.receiverId == session.user.id}">来自：</span>
+                        <span th:text="${message.senderId == session.user.id ? message.receiverId : message.senderId}"></span>
+                        <small class="text-muted ms-2">关于房源：</small>
+                        <small class="text-muted" th:text="${message.houseTitle}"></small>
+                    </h5>
+                    <small class="text-muted" th:text="${#temporals.format(message.createTime, 'yyyy-MM-dd HH:mm')}"></small>
+                </div>
+                <p class="mb-1" th:text="${message.content}"></p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted me-2" th:text="${message.isRead ? '已读' : '未读'}"></small>
+                        <small class="text-muted" th:text="'共' + ${message.messageCount} + '条消息'"></small>
+                    </div>
+                    <a th:href="@{/message/conversation/{userId}/{houseId}(userId=${message.senderId == session.user.id ? message.receiverId : message.senderId}, houseId=${message.houseId})}" 
+                       class="btn btn-sm btn-outline-primary">查看对话</a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(messages)}" class="text-center mt-5">
+            <p class="text-muted">暂无消息</p>
+        </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

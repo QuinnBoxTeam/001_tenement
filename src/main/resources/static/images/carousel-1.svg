@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" style="background-color: #f8f9fa">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#50e3c2;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#grad1)" />
+  <g transform="translate(860,440)">
+    <path d="M100,0 L200,100 L100,200 L0,100 Z" fill="#4a90e2" opacity="0.8" />
+    <circle cx="100" cy="100" r="40" fill="#50e3c2" />
+  </g>
+  <text x="960" y="600" font-family="Arial" font-size="48" fill="#2c3e50" text-anchor="middle">精品房源</text>
+  <text x="960" y="660" font-family="Arial" font-size="24" fill="#7f8c8d" text-anchor="middle">为您精选优质房源，打造舒适居住体验</text>
+</svg>
